@@ -40,7 +40,7 @@ export const useSignIn = () => {
         description: "You have successfully signed in. Explore courses and mock interviews!"
       });
       
-      navigate('/dashboard');
+      navigate('/profile-builder');
     } catch (error: any) {
       console.error("Error in demo sign in:", error);
       toast({

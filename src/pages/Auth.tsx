@@ -126,7 +126,7 @@ export default function Auth() {
   const onLoginSubmit = async (values: LoginFormValues) => {
     try {
       await signIn(values.email, values.password);
-      navigate("/dashboard");
+      navigate("/profile-builder");
     } catch (error) {
       console.error("Login failed:", error);
     }
@@ -135,7 +135,7 @@ export default function Auth() {
   const onSignupSubmit = async (values: SignupFormValues) => {
     try {
       await signUp(values.email, values.password, values.fullName);
-      navigate("/dashboard");
+      navigate("/profile-builder");
     } catch (error) {
       console.error("Signup failed:", error);
     }
@@ -146,7 +146,7 @@ export default function Auth() {
       const randomEmail = `demo${Math.floor(Math.random() * 1000)}@example.com`;
       const randomPassword = "password123";
       await signIn(randomEmail, randomPassword);
-      navigate("/dashboard");
+      navigate("/profile-builder");
     } catch (error) {
       console.error("Demo login failed:", error);
     }
@@ -159,7 +159,7 @@ export default function Auth() {
 
   // Redirect if already authenticated
   if (user) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/profile-builder" replace />;
   }
 
   return (
