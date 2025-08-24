@@ -20,6 +20,7 @@ import DSATopic from "./pages/DSATopic";
 import FutureIntegrations from "./pages/FutureIntegrations";
 import InterviewResult from "./pages/InterviewResult";
 import ProfileBuilder from "./pages/ProfileBuilder";
+import ResumeAnalyzer from "./pages/ResumeAnalyzer";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -120,6 +121,14 @@ const App = () => (
               element={
                 <Layout>
                   <ProfileBuilder />
+                </Layout>
+              }
+            />
+            <Route
+              path="/resume-analyzer"
+              element={
+                <Layout>
+                  <ResumeAnalyzer />
                 </Layout>
               }
             />

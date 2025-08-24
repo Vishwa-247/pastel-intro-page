@@ -113,15 +113,17 @@ export default function Auth() {
     }
   }, [isAutoDemoLogin, activeTab, isLoading]);
 
-  // Auto-initiate demo login when page loads
+  // Auto-initiate demo login when page loads - only if no user is logged in
   useEffect(() => {
-    // Start demo login process after a short delay
-    const timer = setTimeout(() => {
-      setIsAutoDemoLogin(true);
-    }, 1500);
-    
-    return () => clearTimeout(timer);
-  }, []);
+    if (!user) {
+      // Start demo login process after a short delay
+      const timer = setTimeout(() => {
+        setIsAutoDemoLogin(true);
+      }, 1500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [user]);
 
   const onLoginSubmit = async (values: LoginFormValues) => {
     try {
@@ -186,15 +188,17 @@ export default function Auth() {
       <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-indigo-50 to-blue-100 py-12 pt-24">
         <Container size="sm">
           <GlassMorphism className="w-full">
-            <div className="text-center mb-4 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-md">
-              <div className="flex items-center justify-center gap-2 text-amber-700 dark:text-amber-400 mb-1">
-                <Info className="h-4 w-4" />
-                <span className="font-medium">Demo Mode Active</span>
+            {isAutoDemoLogin && (
+              <div className="text-center mb-4 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-md">
+                <div className="flex items-center justify-center gap-2 text-amber-700 dark:text-amber-400 mb-1">
+                  <Info className="h-4 w-4" />
+                  <span className="font-medium">Demo Mode Active</span>
+                </div>
+                <p className="text-sm text-amber-600 dark:text-amber-300">
+                  Auto-signing you in to explore all features. Please wait a moment...
+                </p>
               </div>
-              <p className="text-sm text-amber-600 dark:text-amber-300">
-                Auto-signing you in to explore all features. Please wait a moment...
-              </p>
-            </div>
+            )}
             
             <Tabs value={activeTab} onValueChange={(val: string) => setActiveTab(val as "login" | "signup")}>
               <TabsList className="grid w-full grid-cols-2 mb-6">
@@ -206,7 +210,9 @@ export default function Auth() {
                 <Card>
                   <CardHeader>
                     <CardTitle>Welcome to StudyMate</CardTitle>
-                    <CardDescription>Enter any details to sign in or wait for auto-login</CardDescription>
+                    <CardDescription>
+                      {isAutoDemoLogin ? "Demo login in progress..." : "Enter your credentials or use demo login"}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Form {...loginForm}>
@@ -269,7 +275,9 @@ export default function Auth() {
                 <Card>
                   <CardHeader>
                     <CardTitle>Create Account</CardTitle>
-                    <CardDescription>Enter any details to create a demo account</CardDescription>
+                    <CardDescription>
+                      {isAutoDemoLogin ? "Creating demo account..." : "Enter your details or use demo login"}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Form {...signupForm}>
