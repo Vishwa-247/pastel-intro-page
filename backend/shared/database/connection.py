@@ -4,7 +4,7 @@ import os
 from typing import Optional
 
 # MongoDB configuration
-MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
+MONGODB_URL = os.getenv("MONGODB_URL", "mongodb+srv://Studymate:8bXhotVr353DQGwb@aipathway.aimqfai.mongodb.net/")
 DATABASE_NAME = os.getenv("DATABASE_NAME", "studymate_db")
 
 class DatabaseManager:
@@ -72,6 +72,9 @@ async def get_progress_tracking_collection():
 
 async def get_dsa_problems_collection():
     return db_manager.get_collection("dsa_problems")
+
+async def get_profiles_collection():
+    return db_manager.get_collection("profiles")
 
 # Utility functions
 async def init_database():

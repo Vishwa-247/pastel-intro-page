@@ -19,6 +19,7 @@ import DSASheet from "./pages/DSASheet";
 import DSATopic from "./pages/DSATopic";
 import FutureIntegrations from "./pages/FutureIntegrations";
 import InterviewResult from "./pages/InterviewResult";
+import ProfileBuilder from "./pages/ProfileBuilder";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -118,7 +119,7 @@ const App = () => (
               path="/profile-builder"
               element={
                 <Layout>
-                  <Dashboard />
+                  <ProfileBuilder />
                 </Layout>
               }
             />
