@@ -131,6 +131,25 @@ services:
     networks:
       - studymate_network
 
+  # Resume Analyzer Agent
+  resume-analyzer:
+    build:
+      context: ./agents/resume-analyzer
+      dockerfile: Dockerfile
+    container_name: studymate_resume_analyzer
+    restart: unless-stopped
+    ports:
+      - "8005:8003"
+    environment:
+      - MONGODB_URL=mongodb://admin:password@mongodb:27017/studymate_db?authSource=admin
+      - REDIS_URL=redis://redis:6379
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - studymate_network
+
 volumes:
   mongodb_data:
   redis_data:

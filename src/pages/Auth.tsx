@@ -42,7 +42,6 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 
 export default function Auth() {
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
-  const [isAutoDemoLogin, setIsAutoDemoLogin] = useState(false);
   const { signIn, signUp, user, isLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -65,65 +64,16 @@ export default function Auth() {
     },
   });
 
-  // Auto-fill and submit demo login credentials
-  useEffect(() => {
-    if (isAutoDemoLogin && !isLoading) {
-      // Generate random user credentials
-      const randomName = `demo${Math.floor(Math.random() * 1000)}`;
-      const randomEmail = `${randomName}@example.com`;
-      const randomPassword = `demo${Math.floor(Math.random() * 1000000)}`;
-
-      if (activeTab === "login") {
-        // Set form values and mark as touched
-        loginForm.setValue("email", randomEmail);
-        loginForm.setValue("password", randomPassword);
-        
-        // Show a loading toast
-        toast({
-          title: "Demo Mode Active",
-          description: `Signing in with ${randomEmail}...`,
-        });
-        
-        // Submit the login form after a brief delay to show the filled fields
-        const timer = setTimeout(() => {
-          handleDemoLogin();
-        }, 800);
-        
-        return () => clearTimeout(timer);
-      } else {
-        // Fill the signup form
-        signupForm.setValue("fullName", `Demo User ${randomName}`);
-        signupForm.setValue("email", randomEmail);
-        signupForm.setValue("password", randomPassword);
-        signupForm.setValue("confirmPassword", randomPassword);
-        
-        // Show a loading toast
-        toast({
-          title: "Demo Mode Active",
-          description: `Creating demo account with ${randomEmail}...`,
-        });
-        
-        // Submit the signup form after a brief delay
-        const timer = setTimeout(() => {
-          signupForm.handleSubmit(onSignupSubmit)();
-        }, 800);
-        
-        return () => clearTimeout(timer);
-      }
+  const handleDemoLogin = async () => {
+    try {
+      const randomEmail = `demo${Math.floor(Math.random() * 1000)}@example.com`;
+      const randomPassword = "password123";
+      await signIn(randomEmail, randomPassword);
+      navigate("/profile-builder");
+    } catch (error) {
+      console.error("Demo login failed:", error);
     }
-  }, [isAutoDemoLogin, activeTab, isLoading]);
-
-  // Auto-initiate demo login when page loads - only if no user is logged in
-  useEffect(() => {
-    if (!user) {
-      // Start demo login process after a short delay
-      const timer = setTimeout(() => {
-        setIsAutoDemoLogin(true);
-      }, 1500);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [user]);
+  };
 
   const onLoginSubmit = async (values: LoginFormValues) => {
     try {
@@ -143,7 +93,7 @@ export default function Auth() {
     }
   };
 
-  const handleDemoLogin = async () => {
+  const triggerDemoLogin = async () => {
     try {
       const randomEmail = `demo${Math.floor(Math.random() * 1000)}@example.com`;
       const randomPassword = "password123";
@@ -152,11 +102,6 @@ export default function Auth() {
     } catch (error) {
       console.error("Demo login failed:", error);
     }
-  };
-
-  // Trigger auto demo login
-  const triggerAutoDemoLogin = () => {
-    setIsAutoDemoLogin(true);
   };
 
   // Redirect if already authenticated
@@ -188,17 +133,6 @@ export default function Auth() {
       <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-indigo-50 to-blue-100 py-12 pt-24">
         <Container size="sm">
           <GlassMorphism className="w-full">
-            {isAutoDemoLogin && (
-              <div className="text-center mb-4 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-md">
-                <div className="flex items-center justify-center gap-2 text-amber-700 dark:text-amber-400 mb-1">
-                  <Info className="h-4 w-4" />
-                  <span className="font-medium">Demo Mode Active</span>
-                </div>
-                <p className="text-sm text-amber-600 dark:text-amber-300">
-                  Auto-signing you in to explore all features. Please wait a moment...
-                </p>
-              </div>
-            )}
             
             <Tabs value={activeTab} onValueChange={(val: string) => setActiveTab(val as "login" | "signup")}>
               <TabsList className="grid w-full grid-cols-2 mb-6">
@@ -211,7 +145,7 @@ export default function Auth() {
                   <CardHeader>
                     <CardTitle>Welcome to StudyMate</CardTitle>
                     <CardDescription>
-                      {isAutoDemoLogin ? "Demo login in progress..." : "Enter your credentials or use demo login"}
+                      Enter your credentials or use demo login
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -260,10 +194,10 @@ export default function Auth() {
                           type="button" 
                           variant="outline" 
                           className="w-full" 
-                          onClick={triggerAutoDemoLogin}
-                          disabled={isLoading || isAutoDemoLogin}
+                          onClick={triggerDemoLogin}
+                          disabled={isLoading}
                         >
-                          {isLoading || isAutoDemoLogin ? "Logging in..." : "Quick Demo Login"}
+                          {isLoading ? "Logging in..." : "Quick Demo Login"}
                         </Button>
                       </form>
                     </Form>
@@ -276,7 +210,7 @@ export default function Auth() {
                   <CardHeader>
                     <CardTitle>Create Account</CardTitle>
                     <CardDescription>
-                      {isAutoDemoLogin ? "Creating demo account..." : "Enter your details or use demo login"}
+                      Enter your details or use demo login
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -351,10 +285,10 @@ export default function Auth() {
                           type="button" 
                           variant="outline" 
                           className="w-full" 
-                          onClick={triggerAutoDemoLogin}
-                          disabled={isLoading || isAutoDemoLogin}
+                          onClick={triggerDemoLogin}
+                          disabled={isLoading}
                         >
-                          {isLoading || isAutoDemoLogin ? "Creating demo account..." : "Quick Demo Login"}
+                          {isLoading ? "Creating demo account..." : "Quick Demo Login"}
                         </Button>
                       </form>
                     </Form>

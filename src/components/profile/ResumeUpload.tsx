@@ -8,15 +8,20 @@ import { Badge } from "@/components/ui/badge";
 import { Upload, FileText, CheckCircle, AlertCircle, Download, Trash2 } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
+import ResumePreview from "./ResumePreview";
+import { resumeService } from "@/api/services/resumeService";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ResumeUpload() {
-  const { profile, uploadResume, isLoading } = useProfile();
+  const { profile, updateProfile, isLoading } = useProfile();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [currentFile, setCurrentFile] = useState<File | null>(null);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
-    if (!file) return;
+    if (!file || !user) return;
 
     // Validate file type
     const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
@@ -42,6 +47,8 @@ export default function ResumeUpload() {
     try {
       // Simulate upload progress
       setUploadProgress(0);
+      setCurrentFile(file);
+      
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
           if (prev >= 90) {
@@ -52,17 +59,42 @@ export default function ResumeUpload() {
         });
       }, 200);
 
-      await uploadResume(file);
+      // Extract profile data from resume
+      const extractedData = await resumeService.extractProfileData(file, user.id);
+      
+      // Transform skills array to match ProfileFormData structure
+      const transformedData = {
+        ...extractedData,
+        skills: extractedData.skills.map(skillName => ({
+          name: skillName,
+          level: "Intermediate" as const,
+          category: "Technical" as const
+        }))
+      };
+      
+      // Update profile with extracted data
+      await updateProfile(transformedData);
       
       clearInterval(progressInterval);
       setUploadProgress(100);
+      
+      toast({
+        title: "Resume uploaded successfully",
+        description: "Profile has been updated with resume data",
+      });
       
       setTimeout(() => setUploadProgress(0), 2000);
     } catch (error) {
       console.error("Upload failed:", error);
       setUploadProgress(0);
+      setCurrentFile(null);
+      toast({
+        title: "Upload failed",
+        description: "Please try again",
+        variant: "destructive",
+      });
     }
-  }, [uploadResume, toast]);
+  }, [updateProfile, user, toast]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -205,6 +237,9 @@ export default function ResumeUpload() {
                 </ul>
               </div>
             )}
+
+            {/* Resume Preview */}
+            {currentFile && <ResumePreview file={currentFile} />}
 
             {/* Upload New Resume */}
             <div className="pt-4 border-t">

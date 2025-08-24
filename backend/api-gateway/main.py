@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import httpx
@@ -181,6 +181,37 @@ async def send_message(message_data: dict, user_id: str = Depends(verify_token))
 @app.get("/progress")
 async def get_progress(user_id: str = Depends(verify_token)):
     return await forward_to_agent("progress-analyst", f"/progress?user_id={user_id}", "GET")
+
+# Resume Analyzer Routes
+@app.post("/resume/analyze")
+async def analyze_resume(
+    resume: UploadFile = File(...),
+    job_role: str = Form(...),
+    job_description: str = Form(""),
+    user_id: Optional[str] = Form(None)
+):
+    """Analyze resume for specific job role"""
+    async with httpx.AsyncClient(timeout=60.0) as client:
+        files = {"resume": (resume.filename, await resume.read(), resume.content_type)}
+        data = {
+            "job_role": job_role,
+            "job_description": job_description,
+            "user_id": user_id or "demo"
+        }
+        response = await client.post(f"{AGENT_SERVICES['resume-analyzer']}/analyze-resume", files=files, data=data)
+        return response.json()
+
+@app.post("/resume/extract-profile")
+async def extract_profile_data(
+    resume: UploadFile = File(...),
+    user_id: str = Form(...)
+):
+    """Extract profile data from resume"""
+    async with httpx.AsyncClient(timeout=60.0) as client:
+        files = {"resume": (resume.filename, await resume.read(), resume.content_type)}
+        data = {"user_id": user_id}
+        response = await client.post(f"{AGENT_SERVICES['resume-analyzer']}/extract-profile-data", files=files, data=data)
+        return response.json()
 
 if __name__ == "__main__":
     import uvicorn
