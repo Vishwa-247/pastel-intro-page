@@ -14,43 +14,37 @@ export const useSessionManager = () => {
       try {
         if (mounted) setIsLoading(true);
         
-        // Clear any existing session and user data first
-        if (mounted) {
-          setSession(null);
-          setUser(null);
-        }
+        // Check if we have stored user authentication
+        const authData = localStorage.getItem('auth.token');
         
-        // For demo purposes, check if we have stored demo user
-        const demoAuthData = localStorage.getItem('auth.token');
-        
-        if (demoAuthData) {
-          const demoData = JSON.parse(demoAuthData);
-          const demoUser = demoData.currentSession?.user;
+        if (authData) {
+          const userData = JSON.parse(authData);
+          const currentUser = userData.currentSession?.user;
           
-          if (demoUser) {
-            // Create a fake session object
-            const mockSession = {
-              access_token: demoData.currentSession.access_token || 'demo-token',
-              refresh_token: demoData.currentSession.refresh_token || 'demo-refresh-token',
-              user: demoUser,
+          if (currentUser && mounted) {
+            // Create session object
+            const userSession = {
+              access_token: userData.currentSession.access_token || 'token-' + Date.now(),
+              refresh_token: userData.currentSession.refresh_token || 'refresh-' + Date.now(),
+              user: currentUser,
               expires_at: Date.now() + 3600000, // 1 hour from now
               expires_in: 3600
             };
             
-            if (mounted) {
-              setSession(mockSession);
-              setUser(demoUser);
-            }
+            setSession(userSession);
+            setUser(currentUser);
           }
         }
       } catch (error) {
         console.error("Auth initialization error:", error);
+        // Clear invalid auth data
+        localStorage.removeItem('auth.token');
       } finally {
         if (mounted) setIsLoading(false);
       }
     }
     
-    // Initialize auth
+    // Initialize auth immediately
     initializeAuth();
     
     return () => {

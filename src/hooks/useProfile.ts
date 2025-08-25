@@ -95,32 +95,53 @@ export const useProfile = () => {
     }
   };
 
-  const uploadResume = async (file: File) => {
+  const uploadResume = async (file: File, jobRole?: string) => {
     if (!profile || !user) return;
 
     setIsLoading(true);
     try {
-      // TODO: Implement actual resume upload and parsing
-      // For demo, simulate the upload
-      const resumeData = {
-        filename: file.name,
-        uploadDate: new Date().toISOString(),
-        parsedData: {
-          // Mock parsed data
-          extractedText: "Sample resume content...",
-        },
-        aiAnalysis: "This is a well-structured resume with relevant experience in software development.",
-        skillGaps: ["Advanced React", "System Design", "Cloud Architecture"],
-        recommendations: [
-          "Consider adding more quantifiable achievements",
-          "Include relevant certifications",
-          "Highlight leadership experience"
-        ],
-      };
+      // Call FastAPI backend for resume analysis and profile extraction
+      const formData = new FormData();
+      formData.append('resume', file);
+      formData.append('user_id', user.id);
+      if (jobRole) {
+        formData.append('job_role', jobRole);
+      }
 
+      const response = await fetch('http://localhost:8000/api/resume/extract-profile', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to process resume');
+      }
+
+      const extractedData = await response.json();
+      
+      // Transform and merge extracted data with current profile
       const updatedProfile: UserProfile = {
         ...profile,
-        resumeData,
+        personalInfo: {
+          ...profile.personalInfo,
+          ...extractedData.personalInfo,
+        },
+        education: extractedData.education || profile.education,
+        experience: extractedData.experience || profile.experience,
+        projects: extractedData.projects || profile.projects,
+        skills: extractedData.skills || profile.skills,
+        certifications: extractedData.certifications || profile.certifications,
+        resumeData: {
+          filename: file.name,
+          uploadDate: new Date().toISOString(),
+          extractedText: extractedData.resumeData?.extractedText || "",
+          aiAnalysis: extractedData.resumeData?.aiAnalysis || "",
+          skillGaps: extractedData.resumeData?.skillGaps || [],
+          recommendations: extractedData.resumeData?.recommendations || [],
+        },
         updatedAt: new Date().toISOString(),
       };
 
@@ -129,14 +150,16 @@ export const useProfile = () => {
 
       toast({
         title: "Success",
-        description: "Resume uploaded and analyzed successfully",
+        description: "Resume uploaded and profile updated automatically",
       });
+
+      return extractedData;
 
     } catch (error) {
       console.error("Failed to upload resume:", error);
       toast({
         title: "Error",
-        description: "Failed to upload resume",
+        description: "Failed to upload resume. Please try again.",
         variant: "destructive",
       });
       throw error;

@@ -1,14 +1,15 @@
 
 # StudyMate AI Learning Platform
 
-An AI-powered learning platform with course generation, flashcards, quizzes, and mock interview preparation.
+An AI-powered learning platform with course generation, flashcards, quizzes, mock interview preparation, and AI-powered resume analysis.
 
 ## Environment Setup
 
-This application requires the following environment variable:
+This application requires the following environment variables:
 
 ```
 VITE_GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_API_KEY=AIzaSyBr964zVyQutiRjAUId0l767TyfaAiPEuE
 ```
 
 ### Getting a Gemini API Key
@@ -19,21 +20,89 @@ VITE_GEMINI_API_KEY=your_gemini_api_key_here
 
 ## Running the Application
 
+### Backend Setup (FastAPI + MongoDB)
+
+#### Option 1: Quick Setup (Recommended)
+
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+
+2. Run the setup script:
+   
+   **Linux/macOS:**
+   ```bash
+   chmod +x setup.sh
+   ./setup.sh
+   ```
+   
+   **Windows:**
+   ```cmd
+   setup.bat
+   ```
+
+#### Option 2: Manual Setup
+
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+
+2. Make sure you have Docker and Docker Compose installed
+
+3. Start the backend services:
+   ```bash
+   docker-compose up --build
+   ```
+
+   This will start:
+   - **API Gateway** on port 8000
+   - **Resume Analyzer Agent** on port 8001
+   - **Course Generation Agent** on port 8002
+   - **Interview Coach Agent** on port 8003
+   - **Chat Mentor Agent** on port 8004
+   - **Progress Analyst Agent** on port 8005
+   - **MongoDB** on port 27017
+
+4. The backend will be available at `http://localhost:8000`
+
 ### Frontend Setup
 
-1. Clone the repository
-2. Install dependencies:
+1. Install dependencies:
    ```bash
    npm install
    ```
-3. Create a `.env` file in the root directory and add your Gemini API key:
+2. Create a `.env` file in the root directory and add your Gemini API key:
    ```
    VITE_GEMINI_API_KEY=your_gemini_api_key_here
    ```
-4. Start the application:
+3. Start the frontend application:
    ```bash
    npm run dev
    ```
+
+## Backend Architecture
+
+The backend is built with **FastAPI** and uses a microservices architecture:
+
+### Services:
+- **API Gateway** (port 8000): Main entry point, routes requests to appropriate agents
+- **Resume Analyzer** (port 8001): AI-powered resume parsing and analysis using Gemini API
+- **Course Generation** (port 8002): Generates personalized courses
+- **Interview Coach** (port 8003): Mock interview preparation
+- **Chat Mentor** (port 8004): AI-powered chat assistance
+- **Progress Analyst** (port 8005): Learning progress tracking
+
+### Database:
+- **MongoDB**: Stores user profiles, resume data, courses, and analytics
+- **Collections**: users, profiles, resumes, courses, interviews, chat_sessions
+
+### Key Features:
+- **Resume Upload & Analysis**: PDF/DOCX parsing with AI-powered insights
+- **Profile Auto-Population**: Automatically fills profile from resume data
+- **Job-Specific Analysis**: Tailored resume feedback based on job role
+- **ATS Compatibility Scoring**: Checks resume compatibility with ATS systems
 
 ## Available Static Courses
 

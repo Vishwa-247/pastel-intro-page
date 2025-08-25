@@ -13,7 +13,7 @@ import { resumeService } from "@/api/services/resumeService";
 import { useAuth } from "@/context/AuthContext";
 
 export default function ResumeUpload() {
-  const { profile, updateProfile, isLoading } = useProfile();
+  const { profile, updateProfile, uploadResume, isLoading } = useProfile();
   const { user } = useAuth();
   const { toast } = useToast();
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -59,21 +59,8 @@ export default function ResumeUpload() {
         });
       }, 200);
 
-      // Extract profile data from resume
-      const extractedData = await resumeService.extractProfileData(file, user.id);
-      
-      // Transform skills array to match ProfileFormData structure
-      const transformedData = {
-        ...extractedData,
-        skills: extractedData.skills.map(skillName => ({
-          name: skillName,
-          level: "Intermediate" as const,
-          category: "Technical" as const
-        }))
-      };
-      
-      // Update profile with extracted data
-      await updateProfile(transformedData);
+      // Use the updated uploadResume method that calls FastAPI
+      await uploadResume(file);
       
       clearInterval(progressInterval);
       setUploadProgress(100);
@@ -94,7 +81,7 @@ export default function ResumeUpload() {
         variant: "destructive",
       });
     }
-  }, [updateProfile, user, toast]);
+  }, [uploadResume, user, toast]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

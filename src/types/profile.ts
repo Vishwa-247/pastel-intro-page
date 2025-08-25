@@ -71,6 +71,7 @@ export interface UserProfile {
     filename: string;
     uploadDate: string;
     parsedData?: any;
+    extractedText?: string;
     aiAnalysis?: string;
     skillGaps?: string[];
     recommendations?: string[];
