@@ -6,10 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Container from "@/components/ui/Container";
 import GlassMorphism from "@/components/ui/GlassMorphism";
-import Navbar from "@/components/layout/Navbar";
 import { ArrowRight, BookOpen, Video, Sparkles, Users, BookMarked, FlaskConical, Lightbulb, Megaphone } from "lucide-react";
-import Hero from "@/components/home/Hero";
-import Features from "@/components/home/Features";
 
 const Index = () => {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
@@ -71,10 +68,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
-      
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 overflow-hidden">
+      <section className="relative pt-8 pb-20 overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background to-muted/30"></div>
         <div className="absolute inset-0 -z-10 bg-mesh-1 opacity-30"></div>
         
