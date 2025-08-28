@@ -18,7 +18,7 @@ export const dsaTopics: DSATopic[] = [
     id: "string-basics",
     title: "String Basics",
     icon: "⚡",
-    totalProblems: 32,
+    totalProblems: 28,
     solvedProblems: 0,
     problems: [
       { name: "Reverse String", url: "https://leetcode.com/problems/reverse-string" },

@@ -169,6 +169,57 @@ export default function ResumeAnalyzer() {
           </div>
         </div>
 
+        {/* AI Agent Selection */}
+        {step === 'job-role' && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Brain className="h-5 w-5" />
+                AI Agents Integration
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Our upcoming AI agents will simulate different types of interviewers, each with unique personalities and interviewing styles:
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <h4 className="font-medium text-sm">🤖 Technical Agent</h4>
+                  <p className="text-xs text-muted-foreground">
+                    "Can you walk me through how you would implement a cache system to improve the performance of a database-heavy application?"
+                  </p>
+                  <Badge variant="outline" className="text-xs">Specializes in technical knowledge</Badge>
+                </div>
+                
+                <div className="space-y-2">
+                  <h4 className="font-medium text-sm">👔 HR Agent</h4>
+                  <p className="text-xs text-muted-foreground">
+                    "Tell me about a time when you had to deal with a difficult team member. How did you handle the situation?"
+                  </p>
+                  <Badge variant="outline" className="text-xs">Focuses on behavioral questions</Badge>
+                </div>
+                
+                <div className="space-y-2">
+                  <h4 className="font-medium text-sm">🧠 Aptitude Agent</h4>
+                  <p className="text-xs text-muted-foreground">
+                    "If it takes 5 machines 5 minutes to make 5 widgets, how long would it take 100 machines to make 100 widgets?"
+                  </p>
+                  <Badge variant="outline" className="text-xs">Tests analytical reasoning</Badge>
+                </div>
+                
+                <div className="space-y-2">
+                  <h4 className="font-medium text-sm">👑 Management Agent</h4>
+                  <p className="text-xs text-muted-foreground">
+                    "How would you handle a situation where your team is behind schedule on a critical project?"
+                  </p>
+                  <Badge variant="outline" className="text-xs">Evaluates leadership potential</Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Step 1: Job Role Input */}
         {step === 'job-role' && (
           <Card>
@@ -252,7 +303,7 @@ export default function ResumeAnalyzer() {
                   </div>
 
                   {/* Resume Preview */}
-                  <ResumePreview file={file} />
+                  <ResumePreview file={file} fullView={true} />
 
                   <div className="flex gap-2">
                     <Button onClick={analyzeResume} className="flex-1">
@@ -355,7 +406,7 @@ export default function ResumeAnalyzer() {
             </div>
 
             {/* Resume Preview with Analysis */}
-            {file && <ResumePreview file={file} showAnalysis={true} />}
+            {file && <ResumePreview file={file} showAnalysis={true} fullView={true} />}
 
             {/* Strengths */}
             <Card>

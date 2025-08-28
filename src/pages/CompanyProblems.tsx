@@ -8,14 +8,18 @@ import { companies } from "@/data/companyProblems";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import InlineFeedback from "@/components/course/InlineFeedback";
 
 const CompanyProblems = () => {
   const { companyId } = useParams();
   const company = companies.find(c => c.id === companyId);
   
   const [completedProblems, setCompletedProblems] = useState(new Set<string>());
+  const [expandedFeedback, setExpandedFeedback] = useState<string | null>(null);
 
   const toggleProblem = useCallback((problemName: string) => {
+    const isCurrentlyCompleted = completedProblems.has(problemName);
+
     setCompletedProblems(prev => {
       const newSet = new Set(prev);
       if (newSet.has(problemName)) {
@@ -25,7 +29,12 @@ const CompanyProblems = () => {
       }
       return newSet;
     });
-  }, []);
+
+    // Show feedback form when marking as completed (not when unchecking)
+    if (!isCurrentlyCompleted) {
+      setExpandedFeedback(problemName);
+    }
+  }, [completedProblems]);
 
   if (!company) {
     return (
@@ -164,6 +173,20 @@ const CompanyProblems = () => {
                       </div>
                     </div>
                   </CardContent>
+                  
+                  {/* Inline Feedback */}
+                  {isCompleted && (
+                    <div className="mt-4 px-6 pb-6">
+                      <InlineFeedback
+                        isExpanded={expandedFeedback === problem.name}
+                        onToggle={() => setExpandedFeedback(expandedFeedback === problem.name ? null : problem.name)}
+                        problemName={problem.name}
+                        difficulty={problem.difficulty}
+                        company={company.title}
+                        onSubmit={() => setExpandedFeedback(null)}
+                      />
+                    </div>
+                  )}
                 </Card>
               );
             })}

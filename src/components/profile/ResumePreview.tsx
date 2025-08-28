@@ -7,6 +7,7 @@ import { FileText, Eye, Download, Maximize2, Minimize2 } from "lucide-react";
 interface ResumePreviewProps {
   file: File;
   showAnalysis?: boolean;
+  fullView?: boolean;
 }
 
 export default function ResumePreview({ file, showAnalysis = false }: ResumePreviewProps) {
