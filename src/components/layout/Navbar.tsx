@@ -5,6 +5,7 @@ import { Menu, X, LogOut, User } from "lucide-react";
 import Container from "../ui/Container";
 import GlassMorphism from "../ui/GlassMorphism";
 import { useAuth } from "@/context/AuthContext";
+import logo from "@/assets/logo.png";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -78,7 +79,12 @@ const Navbar = () => {
             to="/"
             className="flex items-center space-x-2 text-xl font-bold transition-opacity hover:opacity-80"
           >
-            <span className="text-gradient">StudyMate</span>
+            <img 
+              src={logo} 
+              alt="InterviewGenius LMS" 
+              className="h-10 w-auto"
+            />
+            <span className="text-gradient hidden sm:inline">InterviewGenius</span>
           </Link>
 
           {/* Desktop Navigation */}
